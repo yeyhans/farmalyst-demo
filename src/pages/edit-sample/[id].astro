@@ -1,0 +1,88 @@
+---
+// src/pages/edit-sample/[id].astro
+import DashboardLayout from '../../layouts/DashboardLayout.astro';
+import { app } from "../../firebase/server";
+import { getAuth } from "firebase-admin/auth";
+import { getFirestore } from "firebase-admin/firestore";
+
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let sampleData;
+let error = null;
+let sampleId = Astro.params.id;
+
+if (!Astro.cookies.has("__session")) {
+  return Astro.redirect("/signin");
+}
+
+const sessionCookie = Astro.cookies.get("__session").value;
+try {
+  const decodedCookie = await auth.verifySessionCookie(sessionCookie);
+  const userId = decodedCookie.uid;
+
+  // Obtener la muestra específica desde Firestore
+  const sampleDoc = await db.collection("samples").doc(sampleId).get();
+  if (sampleDoc.exists && sampleDoc.data().userId === userId) {
+    sampleData = { id: sampleDoc.id, ...sampleDoc.data() };
+  } else {
+    error = "No se encontró la muestra o no tienes permiso para editarla.";
+  }
+} catch (err) {
+  console.error("Error al recuperar la muestra:", err);
+  error = "No se pudo cargar la muestra. Por favor, inténtelo de nuevo.";
+}
+---
+
+<DashboardLayout title="Editar Muestra">
+  <div class="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-md">
+    <h2 class="text-2xl font-bold mb-6">Editar Muestra</h2>
+
+    {error && <p class="text-red-500 mb-4">{error}</p>}
+
+    <!-- Formulario de edición de muestra -->
+    <form action="/api/samples/edit" method="post" class="space-y-6">
+      <input type="hidden" name="sampleId" value={sampleData?.id}>
+
+      <div>
+        <label for="name" class="block text-sm font-medium text-gray-700">Nombre de la Muestra</label>
+        <input 
+          type="text" 
+          id="name" 
+          name="name" 
+          value={sampleData?.name || ''} 
+          required 
+          class="mt-1 p-2 block w-full border border-gray-300 rounded-md"
+        >
+      </div>
+
+      <div>
+        <label for="bank" class="block text-sm font-medium text-gray-700">Banco</label>
+        <input 
+          type="text" 
+          id="bank" 
+          name="bank" 
+          value={sampleData?.bank || ''} 
+          required 
+          class="mt-1 p-2 block w-full border border-gray-300 rounded-md"
+        >
+      </div>
+
+      <div>
+        <label for="category" class="block text-sm font-medium text-gray-700">Categoría</label>
+        <input 
+          type="text" 
+          id="category" 
+          name="category" 
+          value={sampleData?.category || ''} 
+          disabled 
+          class="mt-1 p-2 block w-full border border-gray-300 rounded-md bg-gray-100"
+        >
+      </div>
+
+      <div class="mt-6">
+        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-md">Guardar Cambios</button>
+      </div>
+    </form>
+  </div>
+</DashboardLayout>

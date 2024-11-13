@@ -1,0 +1,90 @@
+---
+// src/pages/edit-evaluations/[id].astro
+import DashboardLayout from '../../layouts/DashboardLayout.astro';
+import { app } from "../../firebase/server";
+import { getAuth } from "firebase-admin/auth";
+import { getFirestore } from "firebase-admin/firestore";
+
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const { id } = Astro.params; // Obtener el ID de la URL
+let evaluationData = null;
+
+// Verificar sesión de usuario
+if (!Astro.cookies.has("__session")) {
+  return Astro.redirect("/signin");
+}
+
+const sessionCookie = Astro.cookies.get("__session").value;
+
+try {
+  const decodedCookie = await auth.verifySessionCookie(sessionCookie);
+  const userId = decodedCookie.uid;
+
+  // Obtener la evaluación desde Firestore por su ID
+  const evaluationDoc = await db.collection("evaluations").doc(id).get();
+  if (evaluationDoc.exists && evaluationDoc.data().userId === userId) {
+    evaluationData = { id: evaluationDoc.id, ...evaluationDoc.data() };
+  } else {
+    return Astro.redirect("/evaluations-list"); // Redirigir si no se encuentra la evaluación o no pertenece al usuario
+  }
+} catch (err) {
+  console.error("Error al obtener la evaluación:", err);
+  return Astro.redirect("/signin");
+}
+---
+
+<DashboardLayout title="Editar Evaluación">
+  <div class="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-md">
+    <h2 class="text-2xl font-bold mb-6 text-center">Editar Evaluación de Muestra</h2>
+
+    <!-- Formulario de Edición de Evaluación -->
+    <form action="/api/evaluations/save" method="post" class="space-y-6">
+      <input type="hidden" name="evaluationId" value={evaluationData.id} />
+      
+      <div>
+        <label for="sampleCode" class="block text-sm font-medium text-gray-700">Código de Muestra</label>
+        <input type="text" id="sampleCode" name="sampleCode" value={evaluationData.sampleCode} required class="mt-1 p-2 block w-full border border-gray-300 rounded-md" />
+      </div>
+
+      <div>
+        <label for="visual" class="block text-sm font-medium text-gray-700">Visual (1-7)</label>
+        <input type="number" id="visual" name="visual" min="1" max="7" value={evaluationData.visual} required class="mt-1 p-2 block w-full border rounded-md text-center" />
+      </div>
+
+      <div>
+        <label for="chemosensory" class="block text-sm font-medium text-gray-700">Quimiosensorial (1-7)</label>
+        <input type="number" id="chemosensory" name="chemosensory" min="1" max="7" value={evaluationData.chemosensory} required class="mt-1 p-2 block w-full border rounded-md text-center" />
+      </div>
+
+      <div>
+        <label for="tasting" class="block text-sm font-medium text-gray-700">Cata (1-7)</label>
+        <input type="number" id="tasting" name="tasting" min="1" max="7" value={evaluationData.tasting} required class="mt-1 p-2 block w-full border rounded-md text-center" />
+      </div>
+
+      <div>
+        <label for="experience" class="block text-sm font-medium text-gray-700">Experiencia (1-7)</label>
+        <input type="number" id="experience" name="experience" min="1" max="7" value={evaluationData.experience} required class="mt-1 p-2 block w-full border rounded-md text-center" />
+      </div>
+
+      <div>
+        <label for="classification" class="block text-sm font-medium text-gray-700">Clasificación</label>
+        <select id="classification" name="classification" required class="mt-1 p-2 block w-full border rounded-md">
+          <option value="OldSchool" selected={evaluationData.classification === "OldSchool"}>OldSchool</option>
+          <option value="Especiado" selected={evaluationData.classification === "Especiado"}>Especiado</option>
+          <option value="Dulce" selected={evaluationData.classification === "Dulce"}>Dulce</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="comments" class="block text-sm font-medium text-gray-700">Comentarios</label>
+        <textarea id="comments" name="comments" rows="3" class="mt-1 p-2 block w-full border rounded-md">{evaluationData.comments}</textarea>
+      </div>
+
+      <div class="mt-6">
+        <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 rounded-md">Guardar Cambios</button>
+      </div>
+    </form>
+  </div>
+</DashboardLayout>

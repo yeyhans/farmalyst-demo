@@ -1,0 +1,187 @@
+---
+// src/pages/evaluations.astro
+import DashboardLayout from '../layouts/DashboardLayout.astro';
+import { app } from "../firebase/server";
+import { getAuth } from "firebase-admin/auth";
+import { getFirestore } from "firebase-admin/firestore";
+
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+if (!Astro.cookies.has("__session")) {
+  return Astro.redirect("/signin");
+}
+
+const sessionCookie = Astro.cookies.get("__session").value;
+let evaluations = [];
+
+try {
+  const decodedCookie = await auth.verifySessionCookie(sessionCookie);
+  const userId = decodedCookie.uid;
+
+  // Obtener evaluaciones del usuario desde Firestore
+  const evaluationsSnapshot = await db.collection("evaluations").where("userId", "==", userId).get();
+  evaluations = evaluationsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+} catch (err) {
+  console.error("Error de sesión o al obtener evaluaciones:", err);
+  return Astro.redirect("/signin");
+}
+---
+
+<DashboardLayout title="Lista de Evaluaciones">
+  <div class="max-w-4xl mx-auto bg-white p-4 md:p-8 rounded-lg shadow-md">
+    <h2 class="text-2xl font-bold mb-6 text-center">Evaluaciones de Muestras</h2>
+
+    <!-- Botón para agregar una nueva evaluación -->
+    <div class="flex justify-end mb-4">
+      <button type="button" onclick="openModal()" class="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-md">Agregar Evaluación</button>
+    </div>
+
+    <!-- Listado de evaluaciones -->
+    <ul class="space-y-4">
+      {evaluations.map(evaluation => (
+        <li class="p-4 bg-gray-100 rounded-lg shadow-sm flex justify-between items-center">
+          <div>
+            <p class="text-xl font-semibold text-blue-600">Código de Muestra: {evaluation.sampleCode}</p>
+            <p class="text-gray-800">Visual: {evaluation.visual}, Quimiosensorial: {evaluation.chemosensory}, Cata: {evaluation.tasting}, Experiencia: {evaluation.experience}</p>
+            <p class="text-gray-800">Clasificación: {evaluation.classification}, Comentarios: {evaluation.comments}</p>
+          </div>
+          <div class="flex space-x-2">
+            <button type="button" onclick={`location.href='/edit-evaluations/${evaluation.id}'`} class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md">
+             Editar
+            </button>
+            <button type="button" onclick={`deleteEvaluation('${evaluation.id}')`} class="bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-md">
+              Eliminar
+            </button>
+          </div>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  <!-- Datos de evaluaciones en JSON escapado con @json -->
+  <script type="application/json" id="evaluation-data">
+    {@json(evaluations)}
+  </script>
+
+  <!-- Modal de Evaluación usando Tailwind CSS -->
+  <div id="evaluationModal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center hidden">
+    <div class="bg-white p-6 rounded-lg shadow-lg max-w-md w-full relative">
+      <button onclick="closeModal()" class="absolute top-2 right-2 text-gray-400 hover:text-gray-600">&times;</button>
+      <h2 id="modalTitle" class="text-xl font-bold mb-4 text-center">Evaluación de Muestra</h2>
+
+      <!-- Formulario de Evaluación -->
+      <form action="/api/evaluations/save" method="post" class="space-y-4">
+        <input type="hidden" id="evaluationId" name="evaluationId" value="" />
+        <input type="text" id="sampleCode" name="sampleCode" placeholder="Código de Muestra" required class="mt-1 p-2 w-full border rounded-md" />
+
+        <div>
+          <label for="visual" class="block text-sm font-medium text-gray-700">Visual (1-7)</label>
+          <input type="number" id="visual" name="visual" min="1" max="7" required class="mt-1 p-2 w-full border rounded-md text-center" />
+        </div>
+
+        <div>
+          <label for="chemosensory" class="block text-sm font-medium text-gray-700">Quimiosensorial (1-7)</label>
+          <input type="number" id="chemosensory" name="chemosensory" min="1" max="7" required class="mt-1 p-2 w-full border rounded-md text-center" />
+        </div>
+
+        <div>
+          <label for="tasting" class="block text-sm font-medium text-gray-700">Cata (1-7)</label>
+          <input type="number" id="tasting" name="tasting" min="1" max="7" required class="mt-1 p-2 w-full border rounded-md text-center" />
+        </div>
+
+        <div>
+          <label for="experience" class="block text-sm font-medium text-gray-700">Experiencia (1-7)</label>
+          <input type="number" id="experience" name="experience" min="1" max="7" required class="mt-1 p-2 w-full border rounded-md text-center" />
+        </div>
+
+        <div>
+          <label for="classification" class="block text-sm font-medium text-gray-700">Clasificación</label>
+          <select id="classification" name="classification" required class="mt-1 p-2 w-full border rounded-md">
+            <option value="">Selecciona</option>
+            <option value="OldSchool">OldSchool</option>
+            <option value="Especiado">Especiado</option>
+            <option value="Dulce">Dulce</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="comments" class="block text-sm font-medium text-gray-700">Comentarios</label>
+          <textarea id="comments" name="comments" rows="3" class="mt-1 p-2 w-full border rounded-md"></textarea>
+        </div>
+
+        <div class="flex justify-between mt-6">
+          <button type="button" onclick="closeModal()" class="w-full bg-gray-300 text-gray-700 py-2 rounded-md">Cancelar</button>
+          <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-md ml-2">Guardar Evaluación</button>
+        </div>
+      </form>
+      
+    </div>
+  </div>
+
+  <!-- Script para manejar la apertura y cierre del modal y eliminar evaluaciones -->
+  <script>
+    window.openModal = function(evaluationId = null) {
+      document.getElementById("evaluationModal").classList.remove("hidden");
+      document.getElementById("modalTitle").textContent = evaluationId ? "Editar Evaluación" : "Nueva Evaluación";
+
+      try {
+        const evaluationData = JSON.parse(document.getElementById("evaluation-data").textContent);
+        if (evaluationId) {
+          const evaluation = evaluationData.find(e => e.id === evaluationId);
+          if (evaluation) {
+            document.getElementById("evaluationId").value = evaluation.id;
+            document.getElementById("sampleCode").value = evaluation.sampleCode;
+            document.getElementById("visual").value = evaluation.visual;
+            document.getElementById("chemosensory").value = evaluation.chemosensory;
+            document.getElementById("tasting").value = evaluation.tasting;
+            document.getElementById("experience").value = evaluation.experience;
+            document.getElementById("classification").value = evaluation.classification;
+            document.getElementById("comments").value = evaluation.comments;
+          }
+        } else {
+          clearModalFields();
+        }
+      } catch (error) {
+        console.error("Error al analizar los datos de evaluación:", error);
+      }
+    }
+
+    window.closeModal = function() {
+      document.getElementById("evaluationModal").classList.add("hidden");
+      clearModalFields();
+    }
+
+    function clearModalFields() {
+      document.getElementById("evaluationId").value = "";
+      document.getElementById("sampleCode").value = "";
+      document.getElementById("visual").value = "";
+      document.getElementById("chemosensory").value = "";
+      document.getElementById("tasting").value = "";
+      document.getElementById("experience").value = "";
+      document.getElementById("classification").value = "";
+      document.getElementById("comments").value = "";
+    }
+
+    // Función para eliminar una evaluación
+    window.deleteEvaluation = async function(evaluationId) {
+      const confirmation = confirm("¿Estás seguro de que deseas eliminar esta muestra?");
+      if (!confirmation) return;
+
+      try {
+        const response = await fetch(`/api/evaluations/delete`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ evaluationId }),
+        });
+        if (response.ok) {
+          location.reload(); // Recargar la página después de la eliminación
+        } else {
+          console.error("Error al eliminar la evaluación");
+        }
+      } catch (error) {
+        console.error("Error al realizar la solicitud de eliminación:", error);
+      }
+    }
+  </script>
+</DashboardLayout>

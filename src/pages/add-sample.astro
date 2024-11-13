@@ -1,0 +1,76 @@
+---
+import DashboardLayout from '../layouts/DashboardLayout.astro';
+import { app } from "../firebase/server";
+import { getAuth } from "firebase-admin/auth";
+
+const auth = getAuth(app);
+
+// Verificación de sesión antes de enviar contenido
+let user;
+if (!Astro.cookies.has("__session")) {
+  return Astro.redirect("/signin");
+}
+
+const sessionCookie = Astro.cookies.get("__session").value;
+try {
+  const decodedCookie = await auth.verifySessionCookie(sessionCookie);
+  user = await auth.getUser(decodedCookie.uid);
+} catch (error) {
+  // Redirigir a /signin si la sesión no es válida o ha expirado
+  return Astro.redirect("/signin");
+}
+---
+<!-- src/pages/add-sample.astro -->
+<DashboardLayout title="Registrar Nueva Muestra">
+    <div class="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-md">
+      <h2 class="text-2xl font-bold mb-6">Registrar Nueva Muestra</h2>
+  
+      <!-- Formulario para registrar una nueva muestra -->
+      <form action="/api/samples/register" method="post" class="space-y-6">
+        <div>
+          <label for="name" class="block text-sm font-medium text-gray-700">Nombre de la Muestra</label>
+          <input 
+            type="text" 
+            id="name" 
+            name="name" 
+            required 
+            class="mt-1 p-2 block w-full border border-gray-300 rounded-md"
+          >
+        </div>
+  
+        <div>
+          <label for="bank" class="block text-sm font-medium text-gray-700">Banco</label>
+          <input 
+            type="text" 
+            id="bank" 
+            name="bank" 
+            required 
+            class="mt-1 p-2 block w-full border border-gray-300 rounded-md"
+          >
+        </div>
+  
+        <div>
+          <label for="category" class="block text-sm font-medium text-gray-700">Categoría</label>
+          <select 
+            id="category" 
+            name="category" 
+            required 
+            class="mt-1 p-2 block w-full border border-gray-300 rounded-md"
+          >
+            <option value="">Selecciona una categoría</option>
+            <option value="Flor Interior">Flor Interior</option>
+            <option value="Flor Exterior">Flor Exterior</option>
+            <option value="Rosin Flor">Rosin Flor</option>
+            <option value="Rosin Hash">Rosin Hash</option>
+            <option value="Hash">Hash</option>
+            <option value="Solventes">Solventes</option>
+          </select>
+        </div>
+  
+        <div class="mt-6">
+          <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 rounded-md">Registrar Muestra</button>
+        </div>
+      </form>
+    </div>
+  </DashboardLayout>
+  

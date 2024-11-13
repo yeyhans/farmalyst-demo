@@ -1,0 +1,67 @@
+---
+// src/pages/register-samples.astro
+import DashboardLayout from '../layouts/DashboardLayout.astro';
+import { app } from "../firebase/server";
+import { getAuth } from "firebase-admin/auth";
+import { getFirestore } from "firebase-admin/firestore";
+
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// Verificación de sesión y recuperación de muestras del usuario
+let userId;
+let samples = [];
+let error = null;
+
+if (!Astro.cookies.has("__session")) {
+  return Astro.redirect("/signin");
+}
+
+const sessionCookie = Astro.cookies.get("__session").value;
+try {
+  const decodedCookie = await auth.verifySessionCookie(sessionCookie);
+  userId = decodedCookie.uid;
+
+  // Obtener las muestras del usuario desde Firestore
+  const samplesSnapshot = await db.collection("samples").where("userId", "==", userId).get();
+  samples = samplesSnapshot.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data()
+  }));
+} catch (err) {
+  console.error("Error al recuperar muestras:", err);
+  error = "No se pudieron recuperar las muestras. Por favor, inténtelo de nuevo.";
+}
+---
+
+<DashboardLayout title="Registrar y Editar Muestras">
+  <div class="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-md">
+    <div class="flex mb-4">
+      <a href="/add-sample" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md">Agregar Nueva Muestra</a>
+    </div>
+    
+
+    <!-- Mostrar error si no se pueden cargar las muestras -->
+    {error && <p class="text-red-500 mb-4">{error}</p>}
+
+    <!-- Listado de Muestras del Usuario -->
+    <h2 class="text-2xl font-bold mt-8 mb-4">Tus Muestras</h2>
+    {samples.length === 0 ? (
+      <p class="text-gray-500">Aún no tienes muestras registradas.</p>
+    ) : (
+      <ul class="space-y-4">
+        {samples.map(sample => (
+          <li class="p-4 bg-gray-100 rounded-lg shadow-sm flex justify-between items-center">
+            <div>
+              <p class="font-medium text-gray-800">{sample.name}</p>
+              <p class="text-gray-600">{sample.bank} - {sample.category}</p>
+            </div>
+            <div>
+              <a href={`/edit-sample/${sample.id}`} class="text-indigo-600 hover:underline">Editar</a>
+            </div>
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
+</DashboardLayout>
