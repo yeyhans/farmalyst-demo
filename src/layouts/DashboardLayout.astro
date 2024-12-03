@@ -20,9 +20,10 @@ try {
   return Astro.redirect("/signin");
 }
 ---
-
+<title>FARMALYST</title>
 <Layout title="Dashboard">
   <!-- Contenido del Dashboard aquí -->
+
   <div x-data="{ isMenuOpen: false }" class="flex flex-col min-h-screen bg-gray-100">
     <!-- Botón de Menú en Pantallas Pequeñas -->
     <button
@@ -52,13 +53,13 @@ try {
     <div class="flex flex-1">
       <!-- Menú de Navegación Lateral -->
       <aside :class="{ '-translate-x-full': !isMenuOpen, 'translate-x-0': isMenuOpen }" class="fixed inset-y-0 left-0 transform lg:translate-x-0 lg:relative w-64 bg-gray-800 text-white p-6 transition-transform duration-200 ease-in-out">
-        <h2 class="text-2xl font-bold mb-6">Dashboard</h2>
+        <h2 class="text-2xl font-bold mb-6">FARMALYST</h2>
         <nav class="space-y-4">
-          <a href="/home" class="block px-4 py-2 rounded hover:bg-gray-700">Inicio</a>
-          <a href="/profile" class="block px-4 py-2 rounded hover:bg-gray-700">Modificar Perfil</a>
+          <a href="/" class="block px-4 py-2 rounded hover:bg-gray-700">Inicio</a>
+          <a href="/profile" class="block px-4 py-2 rounded hover:bg-gray-700">Perfil</a>
           <a href="/register-samples" class="block px-4 py-2 rounded hover:bg-gray-700">Registrar Muestras</a>
           <a href="/evaluations" class="block px-4 py-2 rounded hover:bg-gray-700">Generar Evaluaciones</a>
-          <a href="/statistics" class="block px-4 py-2 rounded hover:bg-gray-700">Estadísticos</a>
+          <a href="/statistics" class="block px-4 py-2 rounded hover:bg-gray-700">Resultados</a>
         </nav>
         <form action="/api/auth/signout" class="mt-6">
           <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-md">Sign out</button>
@@ -66,7 +67,7 @@ try {
       </aside>
 
       <!-- Área de Contenido Principal -->
-      <main class="flex-1 p-8 lg:ml-64">
+      <main class="flex-1 p-8">
         <h1 class="text-3xl font-bold mb-4">Bienvenido, {user.displayName}</h1>
         <slot /> <!-- Aquí se inserta el contenido específico de cada página del dashboard -->
       </main>
