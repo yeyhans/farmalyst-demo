@@ -20,57 +20,78 @@ try {
   return Astro.redirect("/signin");
 }
 ---
-<title>FARMALYST</title>
+<title>FARMIEMOS</title>
 <Layout title="Dashboard">
   <!-- Contenido del Dashboard aquí -->
-
   <div x-data="{ isMenuOpen: false }" class="flex flex-col min-h-screen bg-gray-100">
-    <!-- Botón de Menú en Pantallas Pequeñas -->
-    <button
-      class="lg:hidden bg-gray-800 text-white p-4"
-      @click="isMenuOpen = !isMenuOpen"
-      aria-label="Toggle Menu"
-    >
-      <!-- Icono de hamburguesa -->
-      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-      </svg>
-    </button>
+    
+    <!-- Header principal -->
+    <header 
+      class="w-full bg-gray-800 text-white p-4 flex justify-between items-center">
+      <!-- Logo y nombre de la app -->
+      <h2 class="text-2xl font-bold">FARMIEMOS</h2>
 
-    <!-- Overlay para cerrar el menú al hacer clic fuera de él -->
-    <div
-      x-show="isMenuOpen"
-      @click="isMenuOpen = false"
-      class="fixed inset-0 bg-black bg-opacity-50 lg:hidden"
-      x-transition:enter="transition ease-out duration-200"
-      x-transition:enter-start="opacity-0"
-      x-transition:enter-end="opacity-100"
-      x-transition:leave="transition ease-in duration-200"
-      x-transition:leave-start="opacity-100"
-      x-transition:leave-end="opacity-0"
-    ></div>
+      <!-- Botón de Menú para pantallas pequeñas -->
+      <button 
+        class="lg:hidden bg-gray-800 text-white p-2" 
+        @click="isMenuOpen = !isMenuOpen" 
+        aria-label="Toggle Menu">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
 
-    <div class="flex flex-1">
-      <!-- Menú de Navegación Lateral -->
-      <aside :class="{ '-translate-x-full': !isMenuOpen, 'translate-x-0': isMenuOpen }" class="fixed inset-y-0 left-0 transform lg:translate-x-0 lg:relative w-64 bg-gray-800 text-white p-6 transition-transform duration-200 ease-in-out">
-        <h2 class="text-2xl font-bold mb-6">FARMALYST</h2>
-        <nav class="space-y-4">
-          <a href="/" class="block px-4 py-2 rounded hover:bg-gray-700">Inicio</a>
-          <a href="/profile" class="block px-4 py-2 rounded hover:bg-gray-700">Perfil</a>
-          <a href="/register-samples" class="block px-4 py-2 rounded hover:bg-gray-700">Registrar Muestras</a>
-          <a href="/evaluations" class="block px-4 py-2 rounded hover:bg-gray-700">Generar Evaluaciones</a>
-          <a href="/statistics" class="block px-4 py-2 rounded hover:bg-gray-700">Resultados</a>
-        </nav>
-        <form action="/api/auth/signout" class="mt-6">
-          <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-md">Sign out</button>
-        </form>
-      </aside>
+      <!-- Menú de Navegación horizontal (visible en pantallas grandes) -->
+      <nav class="hidden lg:flex space-x-6">
+        <a href="/" class="hover:bg-gray-700 px-3 py-2 rounded-md">Dashboard</a>
+        <a href="/profile" class="hover:bg-gray-700 px-3 py-2 rounded-md">Configuración</a>
+        <a href="/chat" class="hover:bg-gray-700 px-3 py-2 rounded-md">Chat</a>
+        <a href="/mastergrow" class="hover:bg-gray-700 px-3 py-2 rounded-md">Mastergrow</a>
+      </nav>
 
-      <!-- Área de Contenido Principal -->
-      <main class="flex-1 p-8">
-        <h1 class="text-3xl font-bold mb-4">Bienvenido, {user.displayName}</h1>
-        <slot /> <!-- Aquí se inserta el contenido específico de cada página del dashboard -->
-      </main>
+      <!-- Botón de cerrar sesión -->
+      <form action="/api/auth/signout" class="hidden lg:block">
+        <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md">
+          Sign out
+        </button>
+      </form>
+    </header>
+
+    <!-- Overlay de menú móvil -->
+    <div 
+      x-show="isMenuOpen" 
+      @click="isMenuOpen = false" 
+      class="fixed inset-0 bg-black bg-opacity-50 lg:hidden" 
+      x-transition:enter="transition ease-out duration-200" 
+      x-transition:enter-start="opacity-0" 
+      x-transition:enter-end="opacity-100" 
+      x-transition:leave="transition ease-in duration-200" 
+      x-transition:leave-start="opacity-100" 
+      x-transition:leave-end="opacity-0">
     </div>
+
+    <!-- Menú móvil -->
+    <nav 
+      x-show="isMenuOpen" 
+      @click.away="isMenuOpen = false" 
+      class="fixed top-0 left-0 w-64 h-full bg-gray-800 text-white p-6 z-40 transition-transform transform lg:hidden">
+      <h2 class="text-2xl font-bold mb-6">FARMIEMOS</h2>
+      <a href="/" class="block px-4 py-2 rounded hover:bg-gray-700">Dashboard</a>
+      <a href="/profile" class="block px-4 py-2 rounded hover:bg-gray-700">Configuración</a>
+      <a href="/register-samples" class="block px-4 py-2 rounded hover:bg-gray-700">Cash Flow</a>
+      <a href="/evaluations" class="block px-4 py-2 rounded hover:bg-gray-700">Tareas Diarias</a>
+      <a href="/statistics" class="block px-4 py-2 rounded hover:bg-gray-700">Resultados</a>
+      <form action="/api/auth/signout" class="mt-6">
+        <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-md">
+          Sign out
+        </button>
+      </form>
+    </nav>
+
+    <!-- Área de Contenido Principal -->
+    <main class="flex-1 p-8 mt-16">
+      <h1 class="text-3xl font-bold mb-4">Bienvenido, {user.displayName}</h1>
+      <slot />
+    </main>
   </div>
 </Layout>

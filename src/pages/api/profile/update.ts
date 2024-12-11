@@ -27,6 +27,8 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
     const lighting = formData.get("lighting")?.toString();
     const irrigation = formData.get("irrigation")?.toString();
     const comments = formData.get("comments")?.toString();
+    const device_id = formData.get("device_id")?.toString();
+    
   
     try {
       const decodedToken = await auth.verifySessionCookie(sessionCookie);
@@ -50,6 +52,7 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
         lighting,
         irrigation,
         comments,
+        device_id,
       };
       await db.collection("profiles").doc(userId).set(profileData, { merge: true });
   

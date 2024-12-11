@@ -199,6 +199,26 @@ try {
         >{userData?.comments || ''}</textarea>
       </section>
 
+      <!-- Configuración de Sensor de Temperatura/Humedad -->
+      <section>
+  <h3 class="text-xl font-semibold mb-4">Configuración de Sensor de Temperatura/Humedad</h3>
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div>
+      <label for="device-id" class="block text-sm font-medium text-gray-700">ID del Dispositivo</label>
+      <input 
+        type="text" 
+        id="device_id" 
+        name="device_id" 
+        value={userData?.device_id || ''} 
+        placeholder="Ingrese el Device ID" 
+        required 
+        class="mt-1 p-2 block w-full border border-gray-300 rounded-md"
+      >
+    </div>
+  </div>
+      </section>
+
+
       <div class="mt-6">
         <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 rounded-md">Guardar Cambios</button>
       </div>

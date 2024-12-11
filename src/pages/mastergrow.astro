@@ -20,16 +20,15 @@ try {
   return Astro.redirect("/signin");
 }
 
-import DeviceStatus from '../components/DeviceStatus.jsx';
-import DeviceReport from '../components/DeviceReport';
+import ChatGPT from '../components/ChatGpt.jsx';
+
 
 ---
 
 <DashboardLayout title="Inicio">
   <div>
-    <h2 class="text-2xl font-bold mb-4">Monitor de Estado del Dispositivo</h2>
-    <DeviceStatus client:visible />
-    <DeviceReport client:visible />
+
+    <ChatGPT  client:visible/>
   </div>
 
 
