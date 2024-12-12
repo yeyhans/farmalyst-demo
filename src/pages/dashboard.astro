@@ -1,0 +1,36 @@
+---
+import DashboardLayout from '../layouts/DashboardLayout.astro';
+import { app } from "../firebase/server";
+import { getAuth } from "firebase-admin/auth";
+
+const auth = getAuth(app);
+
+// Verificación de sesión antes de enviar contenido
+let user;
+if (!Astro.cookies.has("__session")) {
+  return Astro.redirect("/signin");
+}
+
+const sessionCookie = Astro.cookies.get("__session").value;
+try {
+  const decodedCookie = await auth.verifySessionCookie(sessionCookie);
+  user = await auth.getUser(decodedCookie.uid);
+} catch (error) {
+  // Redirigir a /signin si la sesión no es válida o ha expirado
+  return Astro.redirect("/signin");
+}
+
+import DeviceStatus from '../components/DeviceStatus.jsx';
+import DeviceReport from '../components/DeviceReport';
+
+---
+
+<DashboardLayout title="Inicio">
+  <div>
+    <h2 class="text-2xl font-bold mb-4">Monitor de Estado del Dispositivo</h2>
+    <DeviceStatus client:visible />
+    <DeviceReport client:visible />
+  </div>
+
+
+</DashboardLayout>

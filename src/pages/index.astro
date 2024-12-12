@@ -1,36 +1,51 @@
 ---
-import DashboardLayout from '../layouts/DashboardLayout.astro';
-import { app } from "../firebase/server";
-import { getAuth } from "firebase-admin/auth";
-
-const auth = getAuth(app);
-
-// Verificación de sesión antes de enviar contenido
-let user;
-if (!Astro.cookies.has("__session")) {
-  return Astro.redirect("/signin");
-}
-
-const sessionCookie = Astro.cookies.get("__session").value;
-try {
-  const decodedCookie = await auth.verifySessionCookie(sessionCookie);
-  user = await auth.getUser(decodedCookie.uid);
-} catch (error) {
-  // Redirigir a /signin si la sesión no es válida o ha expirado
-  return Astro.redirect("/signin");
-}
-
-import DeviceStatus from '../components/DeviceStatus.jsx';
-import DeviceReport from '../components/DeviceReport';
+import Footer from "../layouts/Footer.astro";
+import Header from "../layouts/Header.astro";
+import Layout from "../layouts/Layout.astro";
 
 ---
-
-<DashboardLayout title="Inicio">
-  <div>
-    <h2 class="text-2xl font-bold mb-4">Monitor de Estado del Dispositivo</h2>
-    <DeviceStatus client:visible />
-    <DeviceReport client:visible />
-  </div>
-
-
-</DashboardLayout>
+<Header />
+<Layout title="Sign in">
+  <section class="bg-green-50">
+    <div class="container mx-auto px-6 lg:px-20 py-16 flex flex-col-reverse lg:flex-row items-center">
+      
+      <!-- Columna Izquierda: Título, descripción y botones -->
+      <div class="w-full lg:w-1/2 text-center lg:text-left">
+        <h1 class="text-4xl md:text-5xl font-extrabold text-green-800 leading-tight">
+          Cultiva Inteligentemente <br> con Tecnología IOT y AI
+        </h1>
+        <p class="mt-6 text-lg text-gray-700">
+          Supervisa y optimiza tus cultivos desde cualquier lugar. Con nuestra solución IOT y soporte de inteligencia artificial, maximiza la producción y minimiza el esfuerzo.
+        </p>
+  
+        <!-- Botones -->
+        <div class="mt-8 flex justify-center lg:justify-start space-x-4">
+          <a 
+            href="#servicios" 
+            class="bg-green-600 text-white px-6 py-3 rounded-md text-lg font-medium hover:bg-green-700 transition-all"
+          >
+            Ver Servicios
+          </a>
+          <a 
+            href="#contacto" 
+            class="bg-white border border-green-600 text-green-600 px-6 py-3 rounded-md text-lg font-medium hover:bg-green-50 transition-all"
+          >
+            Contáctanos
+          </a>
+        </div>
+      </div>
+  
+      <!-- Columna Derecha: Imagen o Ilustración -->
+      <div class="w-full lg:w-1/2 flex justify-center lg:justify-end">
+        <img 
+          src="/path/to/hero-image.png" 
+          alt="Jardinería Inteligente" 
+          class="w-full lg:max-w-md"
+        >
+      </div>
+  
+    </div>
+  </section>
+  
+</Layout>
+<Footer />
