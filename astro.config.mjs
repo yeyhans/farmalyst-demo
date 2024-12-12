@@ -10,6 +10,7 @@ dotenv.config();
 export default defineConfig({
   // Or 'hybrid' if you also want to pre-render static routes
   output: 'server',
+  svg: true,
 
   integrations: [tailwind(), react()]
 });

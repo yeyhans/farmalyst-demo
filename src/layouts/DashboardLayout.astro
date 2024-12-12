@@ -3,7 +3,12 @@ import Layout from "../layouts/Layout.astro";
 import { app } from "../firebase/server";
 import { getAuth } from "firebase-admin/auth";
 
+import ChatComponent from "../components/Chat";
+
+
 const auth = getAuth(app);
+
+
 
 // Verificación de sesión antes de enviar contenido
 let user;
@@ -19,6 +24,8 @@ try {
   // Redirigir a /signin si la sesión no es válida o ha expirado
   return Astro.redirect("/signin");
 }
+
+
 ---
 <title>FARMIEMOS</title>
 <Layout title="Dashboard">
@@ -52,7 +59,7 @@ try {
       <!-- Botón de cerrar sesión -->
       <form action="/api/auth/signout" class="hidden lg:block">
         <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md">
-          Sign out
+          Salir
         </button>
       </form>
     </header>
@@ -78,20 +85,81 @@ try {
       <h2 class="text-2xl font-bold mb-6">FARMIEMOS</h2>
       <a href="/" class="block px-4 py-2 rounded hover:bg-gray-700">Dashboard</a>
       <a href="/profile" class="block px-4 py-2 rounded hover:bg-gray-700">Configuración</a>
-      <a href="/register-samples" class="block px-4 py-2 rounded hover:bg-gray-700">Cash Flow</a>
-      <a href="/evaluations" class="block px-4 py-2 rounded hover:bg-gray-700">Tareas Diarias</a>
-      <a href="/statistics" class="block px-4 py-2 rounded hover:bg-gray-700">Resultados</a>
+      <a href="/chat" class="block px-4 py-2 rounded hover:bg-gray-700">Chat</a>
+      <a href="/mastergrow" class="block px-4 py-2 rounded hover:bg-gray-700">Mastergrow</a>
       <form action="/api/auth/signout" class="mt-6">
         <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-md">
-          Sign out
+          Salir
         </button>
       </form>
     </nav>
 
     <!-- Área de Contenido Principal -->
-    <main class="flex-1 p-8 mt-16">
+    <main class="flex-1 p-8 mt-4">
       <h1 class="text-3xl font-bold mb-4">Bienvenido, {user.displayName}</h1>
       <slot />
     </main>
+
+<!-- Botón flotante de chat -->
+<button 
+  id="chat-toggle" 
+  class="fixed bottom-6 right-6 bg-blue-500 hover:bg-blue-600 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg z-50">
+    <span class="text-2xl">💬</span>
+</button>
+
+<!-- Ventana de chat -->
+<div 
+  id="chat-window" 
+  class="fixed bottom-16 right-6 w-80 h-96 bg-white border border-gray-300 shadow-lg rounded-lg z-50 hidden transition-all">
+  <header class="bg-blue-500 text-white p-4 flex justify-between items-center">
+    <h2 class="text-xl font-bold">Chat</h2>
+    <button id="close-chat" class="text-white">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+      </svg>
+    </button>
+  </header>
+
+  <div class="flex-1 overflow-y-auto">
+    <ChatComponent client:visible/>
+  </div>
+
+  <form id="chat-form" class="bg-gray-100 p-4 border-t border-gray-200">
+    <input 
+      type="text" 
+      placeholder="Escribe un mensaje..." 
+      class="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500" 
+    />
+  </form>
+</div>
+
   </div>
 </Layout>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // 🧩 Referencias a los elementos
+  const chatToggle = document.getElementById('chat-toggle'); // Botón flotante
+  const chatWindow = document.getElementById('chat-window'); // Ventana del chat
+  const closeChatButton = document.getElementById('close-chat'); // Botón de cerrar el chat
+
+  // 🧩 Lógica para abrir/cerrar el chat con el botón flotante
+  chatToggle.addEventListener('click', () => {
+    if (chatWindow.classList.contains('hidden')) {
+      chatWindow.classList.remove('hidden');
+      chatWindow.classList.add('block');
+    } else {
+      chatWindow.classList.add('hidden');
+      chatWindow.classList.remove('block');
+    }
+  });
+
+  // 🧩 Lógica para cerrar el chat con el botón de cierre
+  closeChatButton.addEventListener('click', () => {
+    chatWindow.classList.add('hidden');
+    chatWindow.classList.remove('block');
+  });
+});
+
+</script>

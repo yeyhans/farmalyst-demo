@@ -1,10 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 export default function ChatComponent() {
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  // Usar useRef para controlar el scroll automático
+  const messagesContainerRef = useRef(null);
 
   // 📡 Función para obtener mensajes desde la API
   const fetchMessages = async () => {
@@ -63,30 +66,44 @@ export default function ChatComponent() {
     return () => clearInterval(interval);
   }, []);
 
-  return (
-    <div className="flex flex-col h-screen bg-gray-100">
-      <header className="bg-blue-600 p-4 text-white text-center font-bold text-xl">
-        🗨️ Chat en Tiempo Real
-      </header>
+  // 🔥 Lógica para desplazarse automáticamente hacia el último mensaje
+  useEffect(() => {
+    if (messagesContainerRef.current) {
+      // Esperar a que los mensajes se rendericen completamente antes de hacer scroll
+      setTimeout(() => {
+        messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+      }, 100);
+    }
+  }, [messages]); // Escuchar cambios en los mensajes
 
-      <div className="flex-1 overflow-y-auto p-4">
+  return (
+    <div className="flex flex-col h-full bg-white rounded-lg overflow-hidden">
+  
+      {/* 🔥 Sección de mensajes (mostrar solo 3 mensajes visibles con scroll) */}
+      <div 
+        className="flex-1 max-h-[calc(100px*3)] overflow-y-auto p-4" 
+        ref={messagesContainerRef}
+      >
         {loading && <p className="text-center text-gray-500">Cargando mensajes...</p>}
         {error && <p className="text-center text-red-500">{error}</p>}
-
-        <div className="flex flex-col space-y-4">
+  
+        <div className="flex flex-col-reverse space-y-4">
           {messages.map((msg) => (
             <div key={msg.id} className={`flex ${msg.userId === 'currentUserId' ? 'justify-end' : 'justify-start'}`}>
-              <div className={`max-w-xs p-3 rounded-lg shadow-md ${msg.userId === 'currentUserId' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-900'}`}>
-                <p className="text-sm font-semibold">{msg.username || 'Usuario Anónimo'}</p>
+              <div className={`max-w-xs md:max-w-md p-3 rounded-lg shadow-md ${msg.userId === 'currentUserId' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-900'}`}>
+                <div className="flex justify-between items-center">
+                  <p className="text-sm font-semibold truncate">{msg.username || 'Usuario Anónimo'}</p>
+                  <p className="text-xs text-gray-400 ml-2">{new Date(msg.timestamp).toLocaleTimeString()}</p>
+                </div>
                 <p className="text-sm mt-1">{msg.message}</p>
-                <p className="text-xs text-gray-400 mt-2">{new Date(msg.timestamp).toLocaleTimeString()}</p>
               </div>
             </div>
           ))}
         </div>
       </div>
-
-      <form onSubmit={sendMessage} className="bg-white p-4 flex space-x-2">
+  
+      {/* 🔥 Barra de entrada fija en la parte inferior */}
+      <form onSubmit={sendMessage} className="bg-gray-100 p-3 flex items-center space-x-2 border-t border-gray-300 flex-shrink-0">
         <input 
           type="text" 
           value={message} 
@@ -100,6 +117,7 @@ export default function ChatComponent() {
           Enviar
         </button>
       </form>
+  
     </div>
   );
 }
