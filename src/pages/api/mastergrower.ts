@@ -4,9 +4,10 @@ import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
 import { app } from "../../firebase/server";
 import OpenAI from 'openai';
+import { OPENAI_API_KEY } from 'astro:env/server';
 
 const db = getFirestore(app);
-const openai = new OpenAI();
+const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 
 // 🟢 Método POST: Enviar pregunta al AI sobre cultivos
 export const POST: APIRoute = async ({ request, cookies }) => {

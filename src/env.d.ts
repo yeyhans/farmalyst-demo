@@ -10,6 +10,11 @@ interface ImportMetaEnv {
     readonly FIREBASE_TOKEN_URI: string;
     readonly FIREBASE_AUTH_CERT_URL: string
     readonly FIREBASE_CLIENT_CERT_URL: string;
+
+    readonly PUBLIC_TUYA_ACCESS_KEY: string;
+    readonly PUBLIC_TUYA_SECRET_KEY: string;
+
+    readonly OPENAI_API_KEY: string;
   }
   
   interface ImportMeta {

@@ -4,18 +4,24 @@ import { getFirestore } from "firebase-admin/firestore";
 import { app } from "../../../firebase/server";
 import { TuyaContext } from '@tuya/tuya-connector-nodejs';
 
+import { 
+  PUBLIC_TUYA_ACCESS_KEY,
+  PUBLIC_TUYA_SECRET_KEY,
+} from 'astro:env/client';
+
+
 const db = getFirestore(app);
 
 // ⚠️ Validación de variables de entorno
-if (!import.meta.env.PUBLIC_TUYA_ACCESS_KEY || !import.meta.env.PUBLIC_TUYA_SECRET_KEY) {
+if (!PUBLIC_TUYA_ACCESS_KEY || !PUBLIC_TUYA_SECRET_KEY) {
   throw new Error('Las variables PUBLIC_TUYA_ACCESS_KEY y PUBLIC_TUYA_SECRET_KEY no están definidas en .env');
 }
 
 // Configuración de la instancia Tuya
 const context = new TuyaContext({
   baseUrl: 'https://openapi.tuyaus.com',
-  accessKey: import.meta.env.PUBLIC_TUYA_ACCESS_KEY,
-  secretKey: import.meta.env.PUBLIC_TUYA_SECRET_KEY,
+  accessKey: PUBLIC_TUYA_ACCESS_KEY,
+  secretKey: PUBLIC_TUYA_SECRET_KEY,
 });
 
 export const GET: APIRoute = async ({ cookies, request, url }) => {
