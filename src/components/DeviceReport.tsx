@@ -11,24 +11,19 @@ import {
   Legend,
 } from 'chart.js';
 
-// Registrar los componentes de Chart.js
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 export default function DeviceReport() {
-  // Estado para almacenar los registros de la API
   const [report, setReport] = useState({ logs: [], loading: true, error: null });
-
-  // 🕒 Parámetros predeterminados para la consulta
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
-  const [codes, setCodes] = useState('va_temperature,va_humidity'); // 🚀 Solicitar Temperatura y Humedad
-  const [size, setSize] = useState('100'); // 🚀 Traer 100 registros por cada consulta
+  const [codes, setCodes] = useState('va_temperature,va_humidity');
+  const [size, setSize] = useState('100');
 
-  // 📡 Función para obtener todos los registros desde la API
   const fetchAllReports = async () => {
     setReport({ logs: [], loading: true, error: null });
-    let lastRowKey = ''; // Clave de la última fila para la paginación
-    let allLogs = []; // Aquí se acumulan todos los registros
+    let lastRowKey = ''; 
+    let allLogs = []; 
 
     try {
       while (true) {
@@ -36,8 +31,8 @@ export default function DeviceReport() {
         url.searchParams.append('codes', codes);
         url.searchParams.append('start_time', startTime);
         url.searchParams.append('end_time', endTime);
-        url.searchParams.append('last_row_key', lastRowKey); // 🚀 Usa la clave para paginación
-        url.searchParams.append('size', size); // 🚀 Cantidad de registros por página
+        url.searchParams.append('last_row_key', lastRowKey); 
+        url.searchParams.append('size', size); 
 
         const response = await fetch(url);
         const data = await response.json();
@@ -46,20 +41,17 @@ export default function DeviceReport() {
           setReport({ logs: [], loading: false, error: data.error });
           break;
         } else {
-          // Acumular los registros
           allLogs = [...allLogs, ...data.data.logs];
           lastRowKey = data.data.last_row_key;
 
-          // Actualizar el estado con los nuevos registros
           setReport(prevReport => ({ 
             logs: allLogs,
             loading: false, 
             error: null
           }));
 
-          // Verificar si no hay más registros
           if (!data.data.has_more) {
-            break; // Salimos del ciclo while
+            break; 
           }
         }
       }
@@ -68,55 +60,50 @@ export default function DeviceReport() {
     }
   };
 
-  // ⚙️ Calcula el intervalo de tiempo
   const calculateTimeRange = (rangeType) => {
     const now = Date.now();
     let start = 0;
 
-    if (rangeType === 'last_day') {
-      start = now - 24 * 60 * 60 * 1000; // 1 día
-    } else if (rangeType === 'last_3_days') {
-      start = now - 3 * 24 * 60 * 60 * 1000; // 3 días
-    } else if (rangeType === 'last_7_days') {
-      start = now - 7 * 24 * 60 * 60 * 1000; // 7 días
-    } else if (rangeType === 'last_month') {
-      start = now - 30 * 24 * 60 * 60 * 1000; // 30 días
-    } else if (rangeType === 'last_3_months') {
-      start = now - 90 * 24 * 60 * 60 * 1000; // 3 meses
-    } else if (rangeType === 'last_year') {
-      start = now - 365 * 24 * 60 * 60 * 1000; // 1 año
-    }
+    if (rangeType === 'last_day') start = now - 24 * 60 * 60 * 1000; 
+    else if (rangeType === 'last_3_days') start = now - 3 * 24 * 60 * 60 * 1000; 
+    else if (rangeType === 'last_7_days') start = now - 7 * 24 * 60 * 60 * 1000; 
+    else if (rangeType === 'last_month') start = now - 30 * 24 * 60 * 60 * 1000; 
+    else if (rangeType === 'last_3_months') start = now - 90 * 24 * 60 * 60 * 1000; 
+    else if (rangeType === 'last_year') start = now - 365 * 24 * 60 * 60 * 1000; 
 
     setStartTime(start.toString());
     setEndTime(now.toString());
   };
 
-  // 📡 useEffect para consultar la API cuando cambian los parámetros
   useEffect(() => {
-    if (startTime && endTime) {
-      fetchAllReports();
-    }
+    if (startTime && endTime) fetchAllReports();
   }, [startTime, endTime, codes, size]);
 
-  // Formato de fecha legible
   const formatDate = (timestamp) => {
     const date = new Date(parseInt(timestamp));
     return date.toLocaleString();
   };
 
-  // 📈 Preparar los datos para el gráfico
+  // Filtrar los registros de temperatura y humedad
   const temperatureLogs = report.logs.filter(item => item.code === 'va_temperature');
   const humidityLogs = report.logs.filter(item => item.code === 'va_humidity');
-  
-  const chartData = {
-    labels: temperatureLogs.map(item => formatDate(item.event_time)), // Eje X: Tiempos
+
+  // Preparar datos de gráficos individuales
+  const temperatureChartData = {
+    labels: temperatureLogs.map(item => formatDate(item.event_time)),
     datasets: [
       {
         label: 'Temperatura (°C)',
         data: temperatureLogs.map(item => parseInt(item.value) / 10),
         borderColor: 'rgba(75, 192, 192, 1)',
         backgroundColor: 'rgba(75, 192, 192, 0.2)',
-      },
+      }
+    ],
+  };
+
+  const humidityChartData = {
+    labels: humidityLogs.map(item => formatDate(item.event_time)),
+    datasets: [
       {
         label: 'Humedad (%)',
         data: humidityLogs.map(item => parseInt(item.value)),
@@ -134,17 +121,24 @@ export default function DeviceReport() {
         <button onClick={() => calculateTimeRange('last_day')} className="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600">1D</button>
         <button onClick={() => calculateTimeRange('last_3_days')} className="bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-600">3D</button>
         <button onClick={() => calculateTimeRange('last_7_days')} className="bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-600">7D</button>
-        <button onClick={() => calculateTimeRange('last_month')} className="bg-yellow-500 text-white font-bold py-2 px-4 rounded hover:bg-yellow-600">1M</button>
-        <button onClick={() => calculateTimeRange('last_3_months')} className="bg-yellow-500 text-white font-bold py-2 px-4 rounded hover:bg-yellow-600">3M</button>
-        <button onClick={() => calculateTimeRange('last_year')} className="bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-600">1Y</button>
       </div>
 
       {report.loading && <div>Cargando todos los registros...</div>}
       {report.error && <div>Error: {report.error}</div>}
 
       {!report.loading && !report.error && report.logs.length > 0 && (
-        <div>
-          <Line data={chartData} />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          
+          <div>
+            <h2 className="text-xl font-bold mb-4 text-center">Gráfico de Temperatura</h2>
+            <Line data={temperatureChartData} />
+          </div>
+
+          <div>
+            <h2 className="text-xl font-bold mb-4 text-center">Gráfico de Humedad</h2>
+            <Line data={humidityChartData} />
+          </div>
+
         </div>
       )}
     </div>

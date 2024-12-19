@@ -1,4 +1,3 @@
-// src/pages/api/profile/update.ts
 import type { APIRoute } from "astro";
 import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
@@ -28,19 +27,21 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
     const irrigation = formData.get("irrigation")?.toString();
     const comments = formData.get("comments")?.toString();
     const device_id = formData.get("device_id")?.toString();
-    
+    const deviceName = formData.get("deviceName")?.toString();
   
     try {
       const decodedToken = await auth.verifySessionCookie(sessionCookie);
       const userId = decodedToken.uid;
-  
-      // Actualizar nombre y contraseña en Firebase Auth, si se proporcionan
+
+      // ⚡️ Actualizar nombre y contraseña en Firebase Auth
       const updateData: { displayName?: string; password?: string } = {};
       if (name) updateData.displayName = name;
       if (password) updateData.password = password;
+
+      // ⚠️ Asegurarse de que la actualización de Auth se complete antes de continuar
       await auth.updateUser(userId, updateData);
   
-      // Guardar los datos adicionales en Firestore
+      // ⚡️ Guardar los datos adicionales en Firestore
       const profileData = {
         age,
         gender,
@@ -53,13 +54,33 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
         irrigation,
         comments,
         device_id,
+        deviceName,
       };
+
+      // ⚠️ Esperar a que se actualicen los datos de Firestore
       await db.collection("profiles").doc(userId).set(profileData, { merge: true });
-  
-      // Redirigir a /profile después de la actualización
+
+      // ⚡️ Actualizar el nombre del dispositivo en Tuya
+      if (device_id && deviceName) {
+        const requestUrl = new URL(request.url);
+        const baseUrl = `${requestUrl.protocol}//${requestUrl.host}`;
+
+        const response = await fetch(`${baseUrl}/api/tuya/device`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ device_id, deviceName }),
+        });
+
+        const result = await response.json();
+        if (!result.success) {
+          console.error("Error al actualizar el nombre del dispositivo en Tuya:", result);
+        }
+      }
+
+      // 🔥 Redirigir solo cuando TODO esté completo
       return redirect("/profile");
     } catch (error) {
       console.error("Error al actualizar el perfil del usuario:", error);
       return new Response("Failed to update user data", { status: 500 });
     }
-  };
+};

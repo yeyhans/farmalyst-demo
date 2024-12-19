@@ -39,7 +39,7 @@ try {
     <h2 class="text-2xl font-bold mb-6">Perfil del Cultivador</h2>
     <form action="/api/profile/update" method="post" class="space-y-6">
       <!-- Información Personal -->
-      <section>
+      <section id="informacion-personal">
         <h3 class="text-xl font-semibold mb-4">Información Personal</h3>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
@@ -200,7 +200,7 @@ try {
       </section>
 
       <!-- Configuración de Sensor de Temperatura/Humedad -->
-      <section>
+      <section id="config-sensor">
   <h3 class="text-xl font-semibold mb-4">Configuración de Sensor de Temperatura/Humedad</h3>
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
     <div>
@@ -211,6 +211,18 @@ try {
         name="device_id" 
         value={userData?.device_id || ''} 
         placeholder="Ingrese el Device ID" 
+        required 
+        class="mt-1 p-2 block w-full border border-gray-300 rounded-md"
+      >
+    </div>
+    <div>
+      <label for="device-name" class="block text-sm font-medium text-gray-700">Nombre del Dispositivo</label>
+      <input 
+        type="text" 
+        id="deviceName" 
+        name="deviceName" 
+        value={userData?.deviceName || ''} 
+        placeholder="Ingrese Nombre Dispositivo" 
         required 
         class="mt-1 p-2 block w-full border border-gray-300 rounded-md"
       >

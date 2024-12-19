@@ -11,7 +11,7 @@ import {
 
 const db = getFirestore(app);
 
-// ⚠️ Usar import.meta.env para las variables de entorno
+// ⚠️ Usar astro:env/client para las variables de entorno
 if (!PUBLIC_TUYA_ACCESS_KEY || !PUBLIC_TUYA_SECRET_KEY) {
   throw new Error('Las variables PUBLIC_TUYA_ACCESS_KEY y PUBLIC_TUYA_SECRET_KEY no están definidas en .env');
 }
@@ -64,6 +64,7 @@ export const GET: APIRoute = async ({ cookies }) => {
 
     const profileData = profileDoc.data();
     const device_id = profileData?.device_id;
+    const deviceName = profileData?.deviceName; // ⚡️ Obtenemos deviceName de Firestore
 
     if (!device_id) {
       return new Response(JSON.stringify({ error: 'No se encontró un device_id para este usuario' }), { status: 404 });
@@ -90,6 +91,9 @@ export const GET: APIRoute = async ({ cookies }) => {
       ? rawHumidity 
       : 'N/A';
 
+    // ⚡️ NUEVO: Obteniendo el porcentaje de batería
+    const batteryPercentage = status.find((item: any) => item.code === 'battery_percentage')?.value ?? 'N/A';
+
     let vpd = 'N/A';
     let dewPoint = 'N/A';
     if (temperature !== 'N/A' && humidity !== 'N/A') {
@@ -97,7 +101,7 @@ export const GET: APIRoute = async ({ cookies }) => {
       dewPoint = calculateDewPoint(parseFloat(temperature), humidity);
     }
 
-    return new Response(JSON.stringify({ temperature, humidity, vpd, dewPoint }), {
+    return new Response(JSON.stringify({ deviceName ,temperature, humidity, vpd, dewPoint, batteryPercentage }), {
       headers: { 'Content-Type': 'application/json' },
     });
 

@@ -20,6 +20,8 @@ export default defineConfig({
       FIREBASE_TOKEN_URI: envField.string({ context: "server", access: "secret" }),
       FIREBASE_AUTH_CERT_URL: envField.string({ context: "server", access: "secret" }),
       FIREBASE_CLIENT_CERT_URL: envField.string({ context: "server", access: "secret" }),
+      FIREBASE_DATABASE_URL: envField.string({ context: "server", access: "secret" }),
+      
     }
   },
   // Or 'hybrid' if you also want to pre-render static routes
