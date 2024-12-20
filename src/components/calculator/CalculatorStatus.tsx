@@ -22,7 +22,7 @@ const calculateDewPoint = (temperature, humidity) => {
   return parseFloat(dewPoint.toFixed(2)); // Devolver con 2 decimales
 };
 
-export default function UserInputStatus() {
+export default function CalculatorStatus() {
   const [temperature, setTemperature] = useState(''); // Estado para la temperatura
   const [humidity, setHumidity] = useState(''); // Estado para la humedad
   const [vpd, setVPD] = useState('N/A'); // Estado para el VPD
@@ -65,7 +65,7 @@ export default function UserInputStatus() {
           onChange={(e) => setHumidity(e.target.value)} 
         />
         <StaticCard 
-          title="Punto de Rocío" 
+          title="Punto Rocío" 
           value={dewPoint} 
           unit="°C" 
           emoji="❄️" 
@@ -83,32 +83,25 @@ export default function UserInputStatus() {
 
 function StatusCard({ title, value, unit, emoji, isInput = false, onChange }) {
   return (
-    <div className="rounded-lg shadow-md p-6 flex flex-col items-center justify-center hover:scale-105 hover:shadow-xl transition-all duration-300">
-      <div className="flex items-center space-x-2">
-        <span className="text-4xl">{emoji}</span>
-        <p className="text-xl font-semibold text-gray-700">{title}</p>
-      </div>
-
-      <p className="mt-4 text-4xl font-bold text-gray-900 flex items-center justify-center space-x-1">
-        {isInput ? (
-          <div className="flex items-center">
-            <input 
-              type="number" 
-              value={value} 
-              onChange={onChange} 
-              className="w-20 text-center p-1 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" 
-              placeholder="" 
-            />
-            <span className="text-2xl text-gray-500 ml-1">{unit}</span>
-          </div>
-        ) : (
-          <>
-            <span>{value}</span> 
-            <span className="text-2xl text-gray-500">{unit}</span>
-          </>
-        )}
-      </p>
+<div className="mt-4 text-4xl font-bold text-gray-900 flex items-center justify-center space-x-1">
+  {isInput ? (
+    <div className="flex items-center"> 
+      <input 
+        type="number" 
+        value={value} 
+        onChange={onChange} 
+        className="w-20 text-center p-1 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" 
+      />
+      <span className="text-2xl text-gray-500 ml-1">{unit}</span>
     </div>
+  ) : (
+    <>
+      <span>{value}</span> 
+      <span className="text-2xl text-gray-500">{unit}</span>
+    </>
+  )}
+</div>
+
   );
 }
 

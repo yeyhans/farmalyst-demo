@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-export default function DeviceStatus() {
+export default function DeviceStatusGpt() {
   const [status, setStatus] = useState({ /*... status inicial */ });
   const [recommendation, setRecommendation] = useState('Cargando recomendación...');
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import DeviceStatus from '../components/DeviceStatus';
-import DeviceStatusNo from '../components/DeviceStatus2';
+import DeviceStatus from './device/Status';
+import DeviceStatusNo from './calculator/Status';
 
 const ToggleDeviceStatus: React.FC = () => {
   // Estado para controlar cuál componente se muestra

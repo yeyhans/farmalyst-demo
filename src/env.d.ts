@@ -18,6 +18,8 @@ interface ImportMetaEnv {
 
     readonly SUPABASE_SERVICE_KEY: string;
     readonly SUPABASE_URL: string;
+
+    readonly CLOUDINARY_API_SECRET: string;
   }
   
   interface ImportMeta {

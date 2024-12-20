@@ -1,0 +1,15 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { CldUploadWidget } from 'astro-cloudinary';
+---
+
+<Layout title="Register">
+  <div class="flex justify-center items-center min-h-screen bg-gray-100">
+    <CldUploadWidget
+    uploadPreset="<Your Upload Preset>"
+    signatureEndpoint="/api/sign-cloudinary-params"
+  >
+    <button>Secure Upload</button>
+  </CldUploadWidget>
+  </div>
+</Layout>

@@ -20,13 +20,13 @@ try {
   return Astro.redirect("/signin");
 }
 
-import DeviceStatus from '../components/DeviceStatus';
+import DeviceStatus from '../components/device/DeviceStatus';
 import DeviceReport from '../components/DeviceReport';
 import DeviceSummary from '../components/DeviceSummary';
-import DeviceStatusGpt from '../components/DeviceStatusGpt';
+import DeviceStatusGpt from '../components/device/DeviceStatusGpt';
 
-import DeviceStatusNo from '../components/DeviceStatus2';
-import ToggleDeviceStatus from '../components/ToggleDeviceStatus';
+import DeviceStatusNo from '../components/calculator/CalculatorStatus';
+import ToggleStatus from '../components/ToggleStatus';
 
 
 ---
@@ -43,10 +43,8 @@ import ToggleDeviceStatus from '../components/ToggleDeviceStatus';
       <div class="bg-white shadow-md rounded-lg p-6">
 
 
-        <ToggleDeviceStatus client:visible />
+        <ToggleStatus client:visible />
         <p>Material Adicional</p>
-
-        <DeviceStatusGpt client:visible/>
 
       </div>
 

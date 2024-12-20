@@ -147,17 +147,20 @@ function StatusCard({ title, value, unit, emoji, max, min }) {
         <span className="text-4xl">{emoji}</span>
         <p className="text-xl font-semibold text-gray-700">{title}</p>
       </div>
+
       <p className="mt-4 text-4xl font-bold text-gray-900">
         {value}<span className="text-2xl text-gray-500">{unit}</span>
       </p>
 
       <div className="mt-4 text-sm text-gray-700 space-y-1">
-        <p><strong>ATD:</strong> {atd} 
-          <button onClick={() => setIsDialogOpen(true)} className="ml-2 text-blue-500 hover:text-blue-700">
+        <div className="flex items-center">
+          <strong>ATD:</strong> {atd} 
+          <button 
+            onClick={() => setIsDialogOpen(true)} 
+            className="ml-2 text-blue-500 hover:text-blue-700">
             🛈
           </button>
-        </p>
-
+        </div>
       </div>
 
       {isDialogOpen && (

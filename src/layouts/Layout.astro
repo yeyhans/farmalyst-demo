@@ -1,6 +1,5 @@
 ---
-import Footer from "../layouts/Footer.astro"; // Importamos el Footer común
-import Header from "../layouts/Header.astro";
+
 ---
 
 <html lang="es">
@@ -11,6 +10,7 @@ import Header from "../layouts/Header.astro";
     <meta name="generator" content={Astro.generator} />
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <slot name="head" />
+    <title>FARMIEMOS</title>
   </head>
   <body>
     <slot />
