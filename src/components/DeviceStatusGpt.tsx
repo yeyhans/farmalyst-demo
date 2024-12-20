@@ -5,6 +5,7 @@ export default function DeviceStatus() {
   const [recommendation, setRecommendation] = useState('Cargando recomendación...');
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
   const [timeRemaining, setTimeRemaining] = useState('');
+  const [userPrompt, setUserPrompt] = useState(''); // 🟢 Nuevo estado para el userPrompt
 
   const fetchLastRecommendation = async () => {
     try {
@@ -78,6 +79,7 @@ export default function DeviceStatus() {
           minTemperature: status.minTemperature.toString(),
           maxHumidity: status.maxHumidity.toString(),
           minHumidity: status.minHumidity.toString(),
+          userPrompt: userPrompt // 🟢 Incluir el userPrompt en la petición
         }),
       });
 
@@ -96,20 +98,34 @@ export default function DeviceStatus() {
   }, []);
 
   return (
-<div className="p-6 bg-gray-100">
-  <div className="flex justify-between items-center mt-6">
-    <h2 className="text-2xl font-bold">Recomendación de la IA 🌱</h2>
+    <div className="p-6 bg-gray-100">
+      <div className="flex justify-between items-center mt-6">
+        <h2 className="text-2xl font-bold">Recomendación de la IA 🌱</h2>
 
-    <button 
-      onClick={sendDataForRecommendation} 
-      disabled={isButtonDisabled} 
-      className={`px-4 py-2 font-bold text-white ${isButtonDisabled ? 'bg-gray-400' : 'bg-green-500'} rounded`}
-    >
-      {isButtonDisabled ? `Espera ${timeRemaining}` : 'Generar Recomendación'}
-    </button>
-  </div>
+        <button 
+          onClick={sendDataForRecommendation} 
+          disabled={isButtonDisabled} 
+          className={`px-4 py-2 font-bold text-white ${isButtonDisabled ? 'bg-gray-400' : 'bg-green-500'} rounded`}
+        >
+          {isButtonDisabled ? `Espera ${timeRemaining}` : 'Generar Recomendación'}
+        </button>
+      </div>
 
-  <p className="mt-4 text-lg text-gray-700">{recommendation}</p> {/* Mostrar la recomendación */}
-</div>
+      <div className="mt-4">
+        <label htmlFor="userPrompt" className="block text-lg font-semibold text-gray-700">
+          Ingrese su consulta personalizada:
+        </label>
+        <input 
+          type="text" 
+          id="userPrompt" 
+          value={userPrompt} 
+          onChange={(e) => setUserPrompt(e.target.value)} 
+          placeholder="Ejemplo: ¿Cómo mejorar la humedad en la noche?" 
+          className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+        />
+      </div>
+
+      <p className="mt-4 text-lg text-gray-700">{recommendation}</p> {/* Mostrar la recomendación */}
+    </div>
   );
 }

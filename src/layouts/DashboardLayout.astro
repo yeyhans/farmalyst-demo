@@ -13,13 +13,13 @@ import ChatComponent from "../components/Chat";
     
     <!-- Header principal -->
     <header 
-      class="w-full bg-gray-800 text-white p-4 flex justify-between items-center">
+      class="w-full bg-green-900 text-white p-4 flex justify-between items-center">
       <!-- Logo y nombre de la app -->
       <a href="/" class="text-2xl font-bold">FARMIEMOS</a>
 
       <!-- Botón de Menú para pantallas pequeñas -->
       <button 
-        class="lg:hidden bg-gray-800 text-white p-2" 
+        class="lg:hidden bg-green-900 text-white p-2" 
         @click="isMenuOpen = !isMenuOpen" 
         aria-label="Toggle Menu">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -29,10 +29,10 @@ import ChatComponent from "../components/Chat";
 
       <!-- Menú de Navegación horizontal (visible en pantallas grandes) -->
       <nav class="hidden lg:flex space-x-6">
-        <a href="/dashboard" class="hover:bg-gray-700 px-3 py-2 rounded-md">Dashboard</a>
-        <a href="/profile" class="hover:bg-gray-700 px-3 py-2 rounded-md">Configuración</a>
-        <a href="/chat" class="hover:bg-gray-700 px-3 py-2 rounded-md">Chat</a>
-        <a href="/mastergrow" class="hover:bg-gray-700 px-3 py-2 rounded-md">Mastergrow</a>
+        <a href="/dashboard" class="hover:bg-green-700 px-3 py-2 rounded-md">Dashboard</a>
+        <a href="/profile" class="hover:bg-green-700 px-3 py-2 rounded-md">Configuración</a>
+        <a href="/chat" class="hover:bg-green-700 px-3 py-2 rounded-md">Chat</a>
+        <a href="/mastergrow" class="hover:bg-green-700 px-3 py-2 rounded-md">Mastergrow</a>
       </nav>
 
       <!-- Botón de cerrar sesión -->
@@ -60,12 +60,12 @@ import ChatComponent from "../components/Chat";
     <nav 
       x-show="isMenuOpen" 
       @click.away="isMenuOpen = false" 
-      class="fixed top-0 left-0 w-64 h-full bg-gray-800 text-white p-6 z-40 transition-transform transform lg:hidden">
+      class="fixed top-0 left-0 w-64 h-full bg-green-900 text-white p-6 z-40 transition-transform transform lg:hidden">
       <a href="/" class="text-2xl font-bold">FARMIEMOS</a>
-      <a href="/dashboard" class="block px-4 py-2 rounded hover:bg-gray-700">Dashboard</a>
-      <a href="/profile" class="block px-4 py-2 rounded hover:bg-gray-700">Configuración</a>
-      <a href="/chat" class="block px-4 py-2 rounded hover:bg-gray-700">Chat</a>
-      <a href="/mastergrow" class="block px-4 py-2 rounded hover:bg-gray-700">Mastergrow</a>
+      <a href="/dashboard" class="block px-4 py-2 rounded hover:bg-green-700">Dashboard</a>
+      <a href="/profile" class="block px-4 py-2 rounded hover:bg-green-700">Configuración</a>
+      <a href="/chat" class="block px-4 py-2 rounded hover:bg-green-700">Chat</a>
+      <a href="/mastergrow" class="block px-4 py-2 rounded hover:bg-green-700">Mastergrow</a>
       <form action="/api/auth/signout" class="mt-6">
         <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-md">
           Salir

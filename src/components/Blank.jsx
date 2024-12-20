@@ -108,7 +108,6 @@ export default function DeviceStatus() {
 
   return (
     <div className="p-6 bg-gray-100">
-      <h3 className="text-xl font-bold mb-4">Estado del Dispositivo</h3>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-4xl font-bold text-gray-900">{status.deviceName}</h1>
         <p className="text-sm font-semibold text-gray-700">🔋 {status.batteryPercentage}%</p>

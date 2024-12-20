@@ -15,6 +15,9 @@ interface ImportMetaEnv {
     readonly PUBLIC_TUYA_SECRET_KEY: string;
 
     readonly OPENAI_API_KEY: string;
+
+    readonly SUPABASE_SERVICE_KEY: string;
+    readonly SUPABASE_URL: string;
   }
   
   interface ImportMeta {

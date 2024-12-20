@@ -25,6 +25,8 @@ import DeviceReport from '../components/DeviceReport';
 import DeviceSummary from '../components/DeviceSummary';
 import DeviceStatusGpt from '../components/DeviceStatusGpt';
 
+import DeviceStatusNo from '../components/DeviceStatus2';
+import ToggleDeviceStatus from '../components/ToggleDeviceStatus';
 
 
 ---
@@ -39,8 +41,9 @@ import DeviceStatusGpt from '../components/DeviceStatusGpt';
       
       <!-- 🟩 Casilla 1: DeviceStatus (columna izquierda superior) -->
       <div class="bg-white shadow-md rounded-lg p-6">
-        <h3 class="text-xl font-bold mb-4">Estado del Dispositivo</h3>
-        <DeviceStatus client:visible />
+
+
+        <ToggleDeviceStatus client:visible />
         <p>Material Adicional</p>
 
         <DeviceStatusGpt client:visible/>
@@ -52,6 +55,7 @@ import DeviceStatusGpt from '../components/DeviceStatusGpt';
         <h3 class="text-xl font-bold mb-4">Reporte de Dispositivo</h3>
         <DeviceReport client:visible />
         <DeviceSummary client:visible/>
+
       </div>
 
     </div>

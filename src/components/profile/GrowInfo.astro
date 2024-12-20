@@ -1,0 +1,82 @@
+---
+// Este archivo recibe 'userData' como prop para poblar los campos de entrada
+export interface Props {
+  userData: Record<string, any>;
+}
+
+const { userData } = Astro.props;
+---
+  <section>
+    <h3 class="text-xl font-semibold mb-4">Datos del Cultivo</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <label for="main-crop-type" class="block text-sm font-medium text-gray-700">Tipo de Cultivo Principal</label>
+        <select 
+          id="main-crop-type" 
+          name="main_crop_type" 
+          class="mt-1 p-2 block w-full border border-gray-300 rounded-md"
+        >
+          <option value="organico" selected={userData?.mainCropType === 'organico'}>Orgánico</option>
+          <option value="hibrido" selected={userData?.mainCropType === 'hibrido'}>Híbrido</option>
+          <option value="mineral" selected={userData?.mainCropType === 'mineral'}>Mineral</option>
+        </select>
+      </div>
+      <div>
+        <label for="varieties" class="block text-sm font-medium text-gray-700">Variedades Específicas Cultivadas</label>
+        <input 
+          type="text" 
+          id="varieties" 
+          name="varieties" 
+          value={userData?.varieties || ''} 
+          placeholder="Ej. Blue Dream, OG Kush" 
+          class="mt-1 p-2 block w-full border border-gray-300 rounded-md"
+        >
+      </div>
+      <div>
+        <label for="cultivation-method" class="block text-sm font-medium text-gray-700">Método de Cultivo</label>
+        <select 
+          id="cultivation-method" 
+          name="cultivation_method" 
+          class="mt-1 p-2 block w-full border border-gray-300 rounded-md"
+        >
+          <option value="convencional" selected={userData?.cultivationMethod === 'convencional'}>Convencional</option>
+          <option value="organico" selected={userData?.cultivationMethod === 'organico'}>Orgánico</option>
+          <option value="hidroponico" selected={userData?.cultivationMethod === 'hidroponico'}>Hidropónico</option>
+          <option value="otro" selected={userData?.cultivationMethod === 'otro'}>Otros</option>
+        </select>
+      </div>
+      <div>
+        <label for="lighting" class="block text-sm font-medium text-gray-700">Tipo de Iluminación</label>
+        <input 
+          type="text" 
+          id="lighting" 
+          name="lighting" 
+          value={userData?.lighting || ''} 
+          placeholder="Ej. LED, HPS" 
+          class="mt-1 p-2 block w-full border border-gray-300 rounded-md"
+        >
+      </div>
+      <div>
+        <label for="irrigation" class="block text-sm font-medium text-gray-700">Usa sistema de riego?</label>
+        <select 
+          id="irrigation" 
+          name="irrigation" 
+          class="mt-1 p-2 block w-full border border-gray-300 rounded-md"
+        >
+          <option value="si" selected={userData?.irrigation === 'si'}>Sí</option>
+          <option value="no" selected={userData?.irrigation === 'no'}>No</option>
+        </select>
+      </div>
+    </div>
+  </section>
+
+    <section>
+        <h3 class="text-xl font-semibold mb-4">Comentarios Adicionales</h3>
+          <textarea 
+            id="comments" 
+            name="comments" 
+            rows="4" 
+            class="mt-1 p-2 block w-full border border-gray-300 rounded-md" 
+            placeholder="Escribe aquí cualquier observación o comentario adicional..."
+          >{userData?.comments || ''}</textarea>
+    </section>
