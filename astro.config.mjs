@@ -20,12 +20,8 @@ export default defineConfig({
       FIREBASE_TOKEN_URI: envField.string({ context: "server", access: "secret" }),
       FIREBASE_AUTH_CERT_URL: envField.string({ context: "server", access: "secret" }),
       FIREBASE_CLIENT_CERT_URL: envField.string({ context: "server", access: "secret" }),
-      FIREBASE_DATABASE_URL: envField.string({ context: "server", access: "secret" }),
 
-      SUPABASE_URL: envField.string({ context: "server", access: "secret" }),
-      SUPABASE_SERVICE_KEY: envField.string({ context: "server", access: "secret" }),
 
-      CLOUDINARY_API_SECRET: envField.string({ context: "server", access: "secret" }),
       
     }
   },
